@@ -22,7 +22,7 @@ async function run() {
                     todo VARCHAR(512) NOT NULL,
                     completed BOOLEAN NOT NULL,
                     user_id INTEGER NOT NULL REFERENCES users(id)
-            );
+                );
         `);
 
     console.log('create tables complete', getEmoji(), getEmoji(), getEmoji());

@@ -28,31 +28,67 @@ describe('app routes', () => {
       return client.end(done);
     });
 
-    test('returns animals', async() => {
+    test('posts todos', async() => {
 
       const expectation = [
         {
-          'id': 1,
-          'name': 'bessie',
-          'cool_factor': 3,
-          'owner_id': 1
-        },
-        {
-          'id': 2,
-          'name': 'jumpy',
-          'cool_factor': 4,
-          'owner_id': 1
-        },
-        {
-          'id': 3,
-          'name': 'spot',
-          'cool_factor': 10,
-          'owner_id': 1
+          'id': expect.any(Number),
+          'todo': 'Mow lawn',
+          'completed': false,
+          'user_id': expect.any(Number)
         }
       ];
 
       const data = await fakeRequest(app)
-        .get('/animals')
+        .post('/api/todos')
+        .set('Authorization', token)
+        .send({ todo: 'Mow lawn' })
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(data.body).toEqual(expectation);
+    });
+
+    test('returns todos', async() => {
+
+      const expectation = [
+        {
+          'id': expect.any(Number),
+          'todo': 'Mow lawn',
+          'completed': false,
+          'user_id': expect.any(Number)
+        }
+      ];
+
+      const data = await fakeRequest(app)
+        .get('/api/todos')
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(data.body).toEqual(expectation);
+    });
+
+    test('update todo', async() => {
+
+      const expectation = 
+        {
+          'id': expect.any(Number),
+          'todo': 'Mows the lawn',
+          'completed': true,
+          'user_id': expect.any(Number)
+        };
+
+      const current = await fakeRequest(app)
+        .get('/api/todos')
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      const data = await fakeRequest(app)
+        .put(`/api/todos/${current.body[0].id}`)
+        .set('Authorization', token)
+        .send({ todo: 'Mows the lawn', completed: true })
         .expect('Content-Type', /json/)
         .expect(200);
 
